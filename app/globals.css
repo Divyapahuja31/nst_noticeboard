@@ -1,5 +1,4 @@
 @import "tailwindcss";
-<<<<<<< HEAD
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -131,7 +130,6 @@
     @apply font-sans;
     }
 }
-=======
 
 :root {
   --background: #ffffff;
@@ -157,4 +155,3 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
->>>>>>> ea353d5 (Initial commit from Create Next App)

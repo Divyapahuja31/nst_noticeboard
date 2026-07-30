@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-<<<<<<< HEAD
-import { Geist, Geist_Mono, Inter } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-=======
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
->>>>>>> ea353d5 (Initial commit from Create Next App)
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
