@@ -6,20 +6,20 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import type { Provider } from "next-auth/providers";
 import bcrypt from "bcryptjs";
+import { UserDocument, User } from "./types/user";
 
 const providers: Provider[] = [
-  Credentials({
-    credentials: { password: { label: "Password", type: "password" } },
-    authorize(c) {
-      if (c.password !== "password") return null;
+  Google({
+    profile(profile) {
       return {
-        id: "test",
-        name: "Test User",
-        email: "test@example.com",
+        id: profile.sub,
+        name: profile.name,
+        email: profile.email,
+        image: profile.picture,
+        role: "user",
       };
     },
   }),
-  Google,
   Resend({
     apiKey: process.env.AUTH_RESEND_KEY,
     from: process.env.EMAIL_FROM || "onboarding@resend.dev",
@@ -32,27 +32,31 @@ const providers: Provider[] = [
     },
     async authorize(credentials) {
       if (!credentials?.email || !credentials?.password) return null;
+      try {
+        const db = await getDb();
+        const user = await db.collection<UserDocument>("users").findOne({
+          email: (credentials.email as string).toLowerCase(),
+        });
 
-      const db = await getDb();
-      const user = await db.collection("users").findOne({
-        email: (credentials.email as string).toLowerCase(),
-      });
+        if (!user || !user.password) return null;
 
-      if (!user || !user.password) return null;
+        const isValid = await bcrypt.compare(
+          credentials.password as string,
+          user.password,
+        );
 
-      const isValid = await bcrypt.compare(
-        credentials.password as string,
-        user.password,
-      );
+        if (!isValid) return null;
 
-      if (!isValid) return null;
-
-      return {
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      };
+        return {
+          id: user._id?.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+      } catch (error) {
+        console.error("Error during authentication:", error);
+        return null;
+      }
     },
   }),
 ];
@@ -78,9 +82,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!profile?.email) return false;
 
         const db = await getDb();
-        const existingUser = await db.collection("users").findOne({
-          email: profile.email.toLowerCase(),
-        });
+        const existingUser = await db
+          .collection<UserDocument>("users")
+          .findOne({
+            email: profile.email.toLowerCase(),
+          });
 
         if (!existingUser) {
           return false;
@@ -89,26 +95,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return true;
     },
 
-    async jwt({ token, user, account, profile }) {
-      if (account && profile?.email) {
-        const db = await getDb();
-        const dbUser = await db.collection("users").findOne({
-          email: profile.email.toLowerCase(),
-        });
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.id = dbUser._id.toString();
-        }
-      } else if (user) {
-        token.role = (user as any).role;
-      }
-      return token;
-    },
-
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-        session.user.id = token.sub as string;
+    async session({ session, user }) {
+      if (session.user && user) {
+        session.user.role = (user as User).role || "user";
       }
       return session;
     },

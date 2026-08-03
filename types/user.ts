@@ -12,7 +12,7 @@ export interface UserDocument {
   updatedAt: Date;
 }
 
-export interface SafeUser {
+export interface User {
   id: string;
   name: string;
   email: string;

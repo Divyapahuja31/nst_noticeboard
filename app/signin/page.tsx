@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { signIn, auth, providerMap } from "../../auth"
+import { signIn, providerMap } from "../../auth"
 import { AuthError } from "next-auth"
 
 const SIGNIN_ERROR_URL = "/error"
@@ -34,13 +34,11 @@ export default async function SignInPage(props: {
         </label>
         <input type="submit" value="Sign In" />
       </form>
-      {Object.values(providerMap).map((provider) => (
         <form
-          key={provider.id}
           action={async () => {
             "use server"
             try {
-              await signIn(provider.id, {
+              await signIn("google", {
                 redirectTo: searchParams?.callbackUrl ?? "",
               })
             } catch (error) {
@@ -60,10 +58,9 @@ export default async function SignInPage(props: {
           }}
         >
           <button type="submit">
-            <span>Sign in with {provider.name}</span>
+            <span>Sign in with Google</span>
           </button>
         </form>
-      ))}
     </div>
   )
 }
