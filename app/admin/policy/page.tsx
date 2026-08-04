@@ -1,7 +1,7 @@
 import { getDb } from "@/lib/db";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { addPolicy } from "@/app/actions/AddPolicy";
+import PolicyAdminManager from "@/components/policyAdminManager";
 
 export default async function AdminPolicyPage() {
   const session = await auth();
@@ -10,20 +10,46 @@ export default async function AdminPolicyPage() {
   }
 
   const db = await getDb();
-  const categories = await db.collection("category").find({}).toArray();
+
+  const categoriesRaw = await db.collection("category").find({}).toArray();
+  const categories = categoriesRaw.map((c) => ({
+    _id: c._id.toString(),
+    name: c.name as string,
+    description: (c.description || "") as string,
+  }));
+
+  const policiesRaw = await db
+    .collection("policy")
+    .aggregate([
+      {
+        $lookup: {
+          from: "category",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+    ])
+    .toArray();
+
+  const policies = policiesRaw.map((p) => ({
+    ...p,
+    _id: p._id.toString(),
+    date: p.date ? new Date(p.date) : new Date(),
+    category: {
+      ...p.category,
+      _id: p.category._id.toString(),
+    },
+  }));
 
   return (
-    <form action={addPolicy}>
-      <input name="name" placeholder="Policy Name" required />
-
-      <select name="categoryId" required>
-        {categories.map((c) => (
-          <option key={c._id.toString()} value={c._id.toString()}>{c.name}</option>
-        ))}
-      </select>
-
-      <textarea name="description" placeholder="Description" required />
-      <button type="submit">Add Policy</button>
-    </form>
+    <div>
+      <h1>Manage Policies</h1>
+      <PolicyAdminManager
+        categories={categories}
+        initialPolicies={JSON.parse(JSON.stringify(policies))}
+      />
+    </div>
   );
 }
