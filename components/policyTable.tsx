@@ -24,6 +24,7 @@ export default function PolicyTable({
             <th>Category</th>
             <th>Description</th>
             <th>Release Date</th>
+            <th>File Link</th>
             {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
@@ -38,6 +39,19 @@ export default function PolicyTable({
                   ? format(new Date(policy.date), "dd/MM/yyyy")
                   : "-"}
               </td>
+              <td>
+                {policy.file_link ? (
+                  <iframe
+                    src={policy.file_link + "/preview"}
+                    width="640"
+                    height="480"
+                    allow="autoplay"
+                  ></iframe>
+                ) : (
+                  "-"
+                )}
+              </td>
+
               {isAdmin && (
                 <td>
                   {onEdit && (

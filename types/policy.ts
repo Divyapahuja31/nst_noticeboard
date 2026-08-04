@@ -7,4 +7,5 @@ export interface Policy {
   date: Date;
   description: string;
   category: Category;
+  file_link?: string;
 }

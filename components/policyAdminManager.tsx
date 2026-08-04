@@ -67,6 +67,13 @@ export default function PolicyAdminManager({
           defaultValue={editingPolicy?.name || ""}
         />
 
+        <input
+          name="file_link"
+          placeholder="Policy File Link"
+          required
+          defaultValue={editingPolicy?.file_link || ""}
+        />
+
         <select
           name="categoryId"
           required

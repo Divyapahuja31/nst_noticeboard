@@ -9,7 +9,8 @@ const PolicySchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true
-    }
+    },
+    file_link: { type: String }
   },
   { timestamps: true }
 );

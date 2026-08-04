@@ -15,6 +15,7 @@ export async function updatePolicy(formData: FormData): Promise<void> {
   const name = formData.get("name")?.toString();
   const description = formData.get("description")?.toString();
   const categoryId = formData.get("categoryId")?.toString();
+  const file_link = formData.get("file_link")?.toString();
 
   if (!id) {
     throw new Error("Policy ID is required");
@@ -31,6 +32,7 @@ export async function updatePolicy(formData: FormData): Promise<void> {
       $set: {
         name,
         description,
+        file_link,
         category: new ObjectId(categoryId),
         updatedAt: new Date(),
       },

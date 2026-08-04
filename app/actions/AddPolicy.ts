@@ -14,6 +14,7 @@ export async function addPolicy(formData: FormData): Promise<void> {
   const name = formData.get("name")?.toString();
   const description = formData.get("description")?.toString();
   const categoryId = formData.get("categoryId")?.toString();
+  const file_link = formData.get("file_link")?.toString();
 
   if (!categoryId) {
     throw new Error("Category is required");
@@ -21,7 +22,7 @@ export async function addPolicy(formData: FormData): Promise<void> {
 
   const db = await getDb();
   await db.collection('policy').insertOne({
-    name, description,
+    name, description, file_link,
     category: new ObjectId(categoryId),
     date: new Date(),
     createdAt: new Date(),
