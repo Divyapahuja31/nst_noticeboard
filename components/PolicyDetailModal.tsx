@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Download, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { Download, CheckCircle2, ExternalLink } from "lucide-react";
 import { Policy } from "@/types/policy";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,20 +63,36 @@ export const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({ policy, on
 
           {/* Modal Footer Actions */}
           <div className="mt-8 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <Button
-              variant="dark"
-              size="lg"
-              onClick={() => alert(`Downloading official PDF for ${policy.title}...`)}
-              className="w-full sm:w-auto"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download Official PDF
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
+              <Button
+                variant="dark"
+                size="lg"
+                onClick={() => alert(`Downloading official PDF for ${policy.title}...`)}
+                className="w-full sm:w-auto font-semibold"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Official PDF
+              </Button>
+              
+              {(policy.id === "ufm-2024" || policy.id === "academic-integrity") && (
+                <Link href="/academic/ufm" passHref legacyBehavior>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50/50 hover:text-blue-800 font-semibold"
+                    onClick={onClose}
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View Full Interactive Page
+                  </Button>
+                </Link>
+              )}
+            </div>
             <Button
               variant="secondary"
               size="lg"
               onClick={onClose}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto font-semibold"
             >
               Close Window
             </Button>
