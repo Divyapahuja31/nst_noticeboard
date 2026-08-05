@@ -9,20 +9,15 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 interface NavbarProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  activeCategoryFilter: string;
-  setActiveCategoryFilter: (category: string) => void;
-  setActiveAudienceFilter: (audience: string) => void;
+
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   searchQuery,
   setSearchQuery,
-  activeCategoryFilter,
-  setActiveCategoryFilter,
-  setActiveAudienceFilter,
 }) => {
   return (
-    <header className="max-w-[1100px] mx-auto bg-[#F4F2EC] rounded-[10px] px-4 py-2.5 flex items-center justify-between border border-[#E6E2D8]/70 shadow-xs">
+    <header className="max-w-275 mx-auto bg-[#F4F2EC] rounded-[10px] px-4 py-2.5 flex items-center justify-between border border-[#E6E2D8]/70 shadow-xs">
       {/* Logo & Brand Name */}
       <div className="flex items-center gap-3 pl-1">
         <div className="w-8 h-8 bg-black rounded-[10px] flex items-center justify-center shrink-0 shadow-xs">
@@ -36,12 +31,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Nav Navigation Links */}
       <nav className="hidden md:flex items-center gap-6">
         <Button
-          variant={activeCategoryFilter === "All" ? "outline" : "ghost"}
+          variant="outline"
           size="sm"
-          onClick={() => {
-            setActiveCategoryFilter("All");
-            setActiveAudienceFilter("All");
-          }}
           className="font-semibold text-black"
         >
           Policies

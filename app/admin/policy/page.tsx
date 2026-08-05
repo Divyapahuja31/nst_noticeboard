@@ -36,7 +36,6 @@ export default async function AdminPolicyPage() {
   const policies = policiesRaw.map((p) => ({
     ...p,
     _id: p._id.toString(),
-    date: p.date ? new Date(p.date) : new Date(),
     category: {
       ...p.category,
       _id: p.category._id.toString(),

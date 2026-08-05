@@ -1,12 +1,12 @@
 import { getDb } from "@/lib/db";
-import { Policy } from "@/types/policy";
+import { IPolicy } from "@/types/policy";
 import UFMPolicyClient from "./UFMPolicyClient";
 
 // Disable static caching so page reflects newly uploaded policies immediately
 export const revalidate = 0;
 
 export default async function UFMPolicyPage() {
-  let dbPolicies: Policy[] = [];
+  let dbPolicies: IPolicy[] = [];
   
   try {
     const db = await getDb();
@@ -40,7 +40,7 @@ export default async function UFMPolicyPage() {
       audience: p.audience || "All",
       documentRef: p.documentRef || `DOC-${p._id.toString().substring(18).toUpperCase()}`,
       fullContent: p.fullContent || ""
-    })) as unknown as Policy[];
+    })) as unknown as IPolicy[];
 
   } catch (e) {
     console.error("Failed to fetch policies from database:", e);

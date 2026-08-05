@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { addCategory } from "@/app/actions/AddCategory";
+import CategoryForm from "./categoryForm";
 
 export default async function AdminCategoryPage() {
   const session = await auth();
@@ -9,10 +10,6 @@ export default async function AdminCategoryPage() {
   }
 
   return (
-    <form action={addCategory}>
-      <input name="name" placeholder="Category Name" required />
-      <textarea name="description" placeholder="Description" required />
-      <button type="submit">Add Category</button>
-    </form>
+    <CategoryForm addCategory={addCategory}/>
   );
 }

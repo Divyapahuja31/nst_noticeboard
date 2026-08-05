@@ -1,35 +1,46 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { Download, CheckCircle2, ExternalLink } from "lucide-react";
-import { Policy } from "@/types/policy";
+import { Download, CheckCircle2 } from "lucide-react";
+import { IPolicy } from "@/types/policy";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface PolicyDetailModalProps {
-  policy: Policy | null;
+  policy: IPolicy | null;
   onClose: () => void;
 }
 
 export const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({ policy, onClose }) => {
+  if (!policy) return null;
+
+  const categoryName =
+    typeof policy.category === "object" && policy.category !== null
+      ? policy.category.name
+      : String(policy.category || "General");
+
+  const displayDate =
+    (policy.updatedAt
+      ? new Date(policy.updatedAt).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : "Recently");
+
   return (
     <Dialog open={policy !== null} onOpenChange={(open) => !open && onClose()}>
-      {policy && (
-        <DialogContent onClose={onClose}>
-          <DialogHeader className="space-y-3 pr-8 text-left">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="default" className="bg-black text-white">
-                {policy.category}
-              </Badge>
-              <span className="text-[13px] text-gray-500 font-medium">
-                {policy.updatedDate}
-              </span>
-              <Badge variant="outline" className="font-mono text-[12px] border-gray-300 bg-gray-100 text-gray-800 font-semibold">
-                Ref: {policy.documentRef}
-              </Badge>
-            </div>
+      <DialogContent onClose={onClose}>
+        <DialogHeader className="space-y-3 pr-8 text-left">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="default" className="bg-black text-white">
+              {categoryName}
+            </Badge>
+            <span className="text-[13px] text-gray-500 font-medium">
+              {displayDate}
+            </span>
+          </div>
             <DialogTitle className="text-[28px] font-bold text-[#0d0e12] leading-tight">
               {policy.title}
             </DialogTitle>
@@ -63,42 +74,25 @@ export const PolicyDetailModal: React.FC<PolicyDetailModalProps> = ({ policy, on
 
           {/* Modal Footer Actions */}
           <div className="mt-8 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
-              <Button
-                variant="dark"
-                size="lg"
-                onClick={() => alert(`Downloading official PDF for ${policy.title}...`)}
-                className="w-full sm:w-auto font-semibold"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Official PDF
-              </Button>
-              
-              {(policy.id === "ufm-2024" || policy.id === "academic-integrity") && (
-                <Link href="/academic/ufm" passHref legacyBehavior>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50/50 hover:text-blue-800 font-semibold"
-                    onClick={onClose}
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View Full Interactive Page
-                  </Button>
-                </Link>
-              )}
-            </div>
+            <Button
+              variant="dark"
+              size="lg"
+              onClick={() => alert(`Downloading official PDF for ${policy.title}...`)}
+              className="w-full sm:w-auto"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download Official PDF
+            </Button>
             <Button
               variant="secondary"
               size="lg"
               onClick={onClose}
-              className="w-full sm:w-auto font-semibold"
+              className="w-full sm:w-auto"
             >
               Close Window
             </Button>
           </div>
         </DialogContent>
-      )}
     </Dialog>
   );
 };

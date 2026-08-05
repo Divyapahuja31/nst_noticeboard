@@ -4,7 +4,8 @@ import { useState } from "react";
 import { addPolicy } from "@/app/actions/AddPolicy";
 import { updatePolicy } from "@/app/actions/UpdatePolicy";
 import PolicyTable from "@/components/policyTable";
-import { Policy } from "@/types/policy";
+import { IPolicy } from "@/types/policy";
+import { ICategory } from "@/types/category";
 
 interface CategoryOption {
   _id: string;
@@ -13,16 +14,16 @@ interface CategoryOption {
 
 interface PolicyAdminManagerProps {
   categories: CategoryOption[];
-  initialPolicies: Policy[];
+  initialPolicies: IPolicy[];
 }
 
 export default function PolicyAdminManager({
   categories,
   initialPolicies,
 }: PolicyAdminManagerProps) {
-  const [editingPolicy, setEditingPolicy] = useState<Policy | null>(null);
+  const [editingPolicy, setEditingPolicy] = useState<IPolicy | null>(null);
 
-  const handleEdit = (policy: Policy) => {
+  const handleEdit = (policy: IPolicy) => {
     setEditingPolicy(policy);
   };
 
@@ -30,7 +31,7 @@ export default function PolicyAdminManager({
     setEditingPolicy(null);
   };
 
-  const getCategoryId = (category: any): string => {
+  const getCategoryId = (category: ICategory): string => {
     if (!category) return "";
     if (typeof category === "string") return category;
     if (typeof category === "object" && category?._id) return category._id.toString();
@@ -61,17 +62,17 @@ export default function PolicyAdminManager({
         )}
 
         <input
-          name="name"
-          placeholder="Policy Name"
+          name="title"
+          placeholder="Policy Title"
           required
-          defaultValue={editingPolicy?.name || ""}
+          defaultValue={editingPolicy?.title || ""}
         />
 
         <input
-          name="file_link"
-          placeholder="Policy File Link"
+          name="pdfUrl"
+          placeholder="Policy PDF URL"
           required
-          defaultValue={editingPolicy?.file_link || ""}
+          defaultValue={editingPolicy?.pdfUrl || ""}
         />
 
         <select
@@ -93,6 +94,14 @@ export default function PolicyAdminManager({
           required
           defaultValue={editingPolicy?.description || ""}
         />
+
+        <textarea
+          name="fullContent"
+          placeholder="Full Content"
+          required
+          defaultValue={editingPolicy?.fullContent || ""}
+        />
+
 
         <div>
           <button type="submit">

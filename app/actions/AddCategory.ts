@@ -11,11 +11,16 @@ export async function addCategory(formDate:FormData): Promise<void> {
 
   const name = formDate.get("name")?.toString();
   const description = formDate.get("description")?.toString();
+  const icon = formDate.get("icon")?.toString();
+  const color = formDate.get("color")?.toString();
+
+  if(!name || !description || !icon || !color) {
+    throw new Error("All fields are required");
+  }
 
   const db = await getDb();
   await db.collection('category').insertOne({
-    name, description,
-    createdAt: new Date(),
+    name, description, icon, color
   });
 
   revalidatePath("/policy");

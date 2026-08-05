@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 
 interface UFMPolicyClientProps {
   initialPolicies: any[];
+  onBack?: () => void;
+  defaultSelectedPolicy?: any;
 }
 
 const FALLBACK_POLICIES = [
@@ -49,7 +51,11 @@ const FALLBACK_POLICIES = [
   }
 ];
 
-export default function UFMPolicyClient({ initialPolicies }: UFMPolicyClientProps) {
+export default function UFMPolicyClient({
+  initialPolicies,
+  onBack,
+  defaultSelectedPolicy,
+}: UFMPolicyClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   
   // Use DB policies if they exist, otherwise use fallback policies
@@ -66,9 +72,9 @@ export default function UFMPolicyClient({ initialPolicies }: UFMPolicyClientProp
     });
   }, [policies, searchQuery]);
 
-  // Selected policy state (default to first item if available)
+  // Selected policy state (default to defaultSelectedPolicy or first item)
   const [selectedPolicy, setSelectedPolicy] = useState<any>(
-    filteredPolicies[0] || policies[0] || null
+    defaultSelectedPolicy || filteredPolicies[0] || policies[0] || null
   );
 
   // Helper to format Google Drive link or use Google Docs Viewer to bypass X-Frame-Options blocks
@@ -91,8 +97,8 @@ export default function UFMPolicyClient({ initialPolicies }: UFMPolicyClientProp
   };
 
   const handleDownload = (policy: any) => {
-    if (policy.file_link) {
-      window.open(policy.file_link, "_blank");
+    if (policy.file_link || policy.pdfUrl) {
+      window.open(policy.file_link || policy.pdfUrl, "_blank");
     } else {
       alert("No download file link available for this policy.");
     }
@@ -102,15 +108,25 @@ export default function UFMPolicyClient({ initialPolicies }: UFMPolicyClientProp
     <div className="bg-[#FAF9F6] min-h-screen font-sans antialiased text-[#0d0e12] pb-24">
       {/* Top Header Navigation */}
       <header className="sticky top-0 z-40 bg-white border-b border-[#E6E2D8] px-4 sm:px-8 md:px-12 py-4">
-        <div className="max-w-[1240px] mx-auto flex items-center justify-between">
+        <div className="max-w-310 mx-auto flex items-center justify-between">
           {/* Back button */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-[14px] font-bold text-[#0d0e12] hover:opacity-75 transition-opacity"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Link>
+          {onBack ? (
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-[14px] font-bold text-[#0d0e12] hover:opacity-75 transition-opacity"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Directory
+            </button>
+          ) : (
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-[14px] font-bold text-[#0d0e12] hover:opacity-75 transition-opacity"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Link>
+          )}
 
           {/* Breadcrumbs */}
           <nav className="hidden sm:flex items-center gap-1.5 text-[13px] text-gray-500 font-medium">
@@ -127,7 +143,7 @@ export default function UFMPolicyClient({ initialPolicies }: UFMPolicyClientProp
       </header>
 
       {/* Main Container Layout */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 md:px-12 mt-10">
+      <div className="max-w-310 mx-auto px-4 sm:px-8 md:px-12 mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           
           {/* Left Column - Policy List Sidebar */}

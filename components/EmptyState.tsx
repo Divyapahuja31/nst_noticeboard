@@ -1,20 +1,16 @@
-"use client";
-
 import React from "react";
-import { FileText, FolderOpen, RefreshCw, PlusCircle } from "lucide-react";
+import { FileText, FolderOpen, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 interface EmptyStateProps {
   isDatabaseEmpty: boolean;
   onResetFilters?: () => void;
-  onLoadSampleData?: () => void;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
   isDatabaseEmpty,
   onResetFilters,
-  onLoadSampleData,
 }) => {
   if (isDatabaseEmpty) {
     return (
@@ -29,12 +25,6 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           The institutional policy database is currently empty. Official regulations will appear here once published by administration.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-          {onLoadSampleData && (
-            <Button variant="dark" onClick={onLoadSampleData} className="font-semibold">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Load Sample Policies
-            </Button>
-          )}
           <a href="/admin/policy">
             <Button variant="outline" className="font-semibold border-gray-300 bg-white">
               <PlusCircle className="w-4 h-4 mr-2" />

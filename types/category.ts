@@ -1,7 +1,9 @@
 import { ObjectId } from "mongodb";
 
-export interface Category {
-  _id?: ObjectId;
+export interface ICategory {
+  _id: ObjectId | string;
   name: string;
   description: string;
+  icon: string;
+  color: string
 }

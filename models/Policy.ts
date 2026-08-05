@@ -1,18 +1,19 @@
+import { IPolicy } from "@/types/policy";
 import mongoose, { models, model, Schema } from "mongoose";
 
-const PolicySchema = new Schema(
+const PolicySchema = new Schema<IPolicy>(
   {
-    name: {type: String, required: true},
-    date: { type: Date, required: true, default: Date.now},
+    title: {type: String, required: true},
     description: { type: String, required: true },
+    pdfUrl: { type: String },
+    fullContent: { type: String},
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true
     },
-    file_link: { type: String }
   },
   { timestamps: true }
 );
 
-export const Policy = models.Policy || model("Policy", PolicySchema);
+export const Policy = models.Policy || model<IPolicy>("Policy", PolicySchema);

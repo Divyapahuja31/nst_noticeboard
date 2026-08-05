@@ -1,17 +1,17 @@
 import PolicyTable from "@/components/policyTable";
 import { getDb } from "@/lib/db";
-import { Category } from "@/types/category";
-import { Policy } from "@/types/policy";
+import { ICategory } from "@/types/category";
+import { IPolicy } from "@/types/policy";
 
-const getCategories = async (): Promise<Category[]> => {
+const getCategories = async (): Promise<ICategory[]> => {
   const db = await getDb();
-  const categories = await db.collection<Category>("category").find({}).toArray();
+  const categories = await db.collection<ICategory>("category").find({}).toArray();
   return categories;
 };
 
-const getPolicies = async (): Promise<Policy[]> => {
+const getPolicies = async (): Promise<IPolicy[]> => {
   const db = await getDb();
-  const policies = await db.collection<Policy>("policy").aggregate<Policy>([
+  const policies = await db.collection<IPolicy>("policy").aggregate<IPolicy>([
     {
       $lookup: {
         from: "category",

@@ -1,20 +1,72 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { GraduationCap, Calendar, FileText, ShieldCheck } from "lucide-react";
+import { GraduationCap, Calendar, FileText, ShieldCheck, icons } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ICategory } from "@/types/category";
 
 interface QuickAccessGridProps {
   activeCategoryFilter: string;
-  setActiveCategoryFilter: (category: string) => void;
+  setActiveCategoryFilter: React.Dispatch<React.SetStateAction<string>>;
+  categories: ICategory[];
 }
+
+const COLOR_SCHEMES = [
+  {
+    bg: "bg-[#00e680]",
+    ring: "ring-4 ring-[#00e680]/30",
+    border: "border-0",
+    circleBg: "bg-[#00ce73]",
+    circlePos: "-top-10 -right-10",
+    iconBg: "bg-[#044d28]/15",
+    iconColor: "text-[#044d28]",
+    titleColor: "text-[#0a0b0e]",
+    textColor: "text-[#075631]",
+  },
+  {
+    bg: "bg-[#12141d]",
+    ring: "ring-4 ring-[#12141d]/30",
+    border: "border-0",
+    circleBg: null,
+    circlePos: "",
+    iconBg: "bg-white/10",
+    iconColor: "text-white",
+    titleColor: "text-white",
+    textColor: "text-gray-300",
+  },
+  {
+    bg: "bg-[#ffc500]",
+    ring: "ring-4 ring-[#ffc500]/40",
+    border: "border-0",
+    circleBg: "bg-[#eaa600]",
+    circlePos: "-bottom-10 -right-10",
+    iconBg: "bg-[#523e00]/15",
+    iconColor: "text-[#523e00]",
+    titleColor: "text-[#0d0e12]",
+    textColor: "text-[#523e00]",
+  },
+  {
+    bg: "bg-[#F4F2EC]",
+    ring: "ring-4 ring-gray-300",
+    border: "border border-[#E6E2D8]",
+    circleBg: null,
+    circlePos: "",
+    iconBg: "bg-black/10",
+    iconColor: "text-black",
+    titleColor: "text-[#0d0e12]",
+    textColor: "text-[#505258]",
+  },
+];
+
+const DEFAULT_ICONS = [GraduationCap, Calendar, FileText, ShieldCheck];
 
 export const QuickAccessGrid: React.FC<QuickAccessGridProps> = ({
   activeCategoryFilter,
   setActiveCategoryFilter,
+  categories = [],
 }) => {
+  console.log("cad", categories)
   return (
     <section id="quick-access" className="mt-14 mb-16">
       <div className="flex items-center justify-between mb-6">
@@ -33,101 +85,45 @@ export const QuickAccessGrid: React.FC<QuickAccessGridProps> = ({
         )}
       </div>
 
-      {/* 4 Feature Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        
-        {/* Card 1: Academic & UFM */}
-        <Link href="/academic/ufm" className="block text-inherit no-underline">
-          <Card
-            className={`p-6 min-h-[250px] flex flex-col justify-between relative overflow-hidden cursor-pointer transition-all duration-200 border-0 shadow-xs hover:shadow-md ${
-              activeCategoryFilter === "Academic"
-                ? "bg-[#00e680] ring-4 ring-[#00e680]/30 scale-[1.02]"
-                : "bg-[#00e680] hover:scale-[1.01]"
-            }`}
-          >
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#00ce73] rounded-full opacity-80 pointer-events-none" />
-            <div className="relative z-10 w-11 h-11 bg-[#044d28]/15 rounded-[10px] flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-[#044d28]" />
-            </div>
-            <div className="relative z-10 mt-6">
-              <h3 className="text-[22px] font-bold text-[#0a0b0e] leading-tight tracking-tight">
-                Academic & UFM
-              </h3>
-              <p className="text-[13.5px] font-medium text-[#075631] mt-2 leading-snug">
-                Guidelines on grading, academic integrity, and curriculum standards.
-              </p>
-            </div>
-          </Card>
-        </Link>
+        {categories.map((category, index) => {
+          const theme = COLOR_SCHEMES[index % COLOR_SCHEMES.length];
+          const IconComponent =
+            (category.icon && icons[category.icon as keyof typeof icons]) ||
+            (category.name && icons[category.name as keyof typeof icons]) ||
+            DEFAULT_ICONS[index % DEFAULT_ICONS.length];
 
-        {/* Card 2: Leaves & Attendance */}
-        <Card
-          onClick={() => setActiveCategoryFilter("Attendance")}
-          className={`p-6 min-h-[250px] flex flex-col justify-between relative overflow-hidden cursor-pointer transition-all duration-200 border-0 shadow-xs hover:shadow-md ${
-            activeCategoryFilter === "Attendance"
-              ? "bg-[#12141d] ring-4 ring-[#12141d]/30 scale-[1.02]"
-              : "bg-[#12141d] hover:scale-[1.01]"
-          }`}
-        >
-          <div className="relative z-10 w-11 h-11 bg-white/10 rounded-[10px] flex items-center justify-center">
-            <Calendar className="w-6 h-6 text-white" />
-          </div>
-          <div className="relative z-10 mt-6">
-            <h3 className="text-[22px] font-bold text-white leading-tight tracking-tight">
-              Leaves & Attendance
-            </h3>
-            <p className="text-[13.5px] font-medium text-gray-300 mt-2 leading-snug">
-              Requirements for minimum attendance and protocols for requesting leave.
-            </p>
-          </div>
-        </Card>
+          const isActive = activeCategoryFilter === category.name;
 
-        {/* Card 3: Exam Schedules */}
-        <Card
-          onClick={() => setActiveCategoryFilter("Exams")}
-          className={`p-6 min-h-[250px] flex flex-col justify-between relative overflow-hidden cursor-pointer transition-all duration-200 border-0 shadow-xs hover:shadow-md ${
-            activeCategoryFilter === "Exams"
-              ? "bg-[#ffc500] ring-4 ring-[#ffc500]/40 scale-[1.02]"
-              : "bg-[#ffc500] hover:scale-[1.01]"
-          }`}
-        >
-          <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#eaa600] rounded-full opacity-80 pointer-events-none" />
-          <div className="relative z-10 w-11 h-11 bg-[#523e00]/15 rounded-[10px] flex items-center justify-center">
-            <FileText className="w-6 h-6 text-[#523e00]" />
-          </div>
-          <div className="relative z-10 mt-6">
-            <h3 className="text-[22px] font-bold text-[#0d0e12] leading-tight tracking-tight">
-              Exam Schedules
-            </h3>
-            <p className="text-[13.5px] font-medium text-[#523e00] mt-2 leading-snug">
-              Timetables, rules for invigilation, and make-up exam procedures.
-            </p>
-          </div>
-        </Card>
-
-        {/* Card 4: Conduct & Ethics */}
-        <Card
-          onClick={() => setActiveCategoryFilter("Conduct")}
-          className={`p-6 min-h-[250px] flex flex-col justify-between relative overflow-hidden cursor-pointer transition-all duration-200 border border-[#E6E2D8] shadow-xs hover:shadow-md ${
-            activeCategoryFilter === "Conduct"
-              ? "bg-[#F4F2EC] ring-4 ring-gray-300 scale-[1.02]"
-              : "bg-[#F4F2EC] hover:scale-[1.01]"
-          }`}
-        >
-          <div className="relative z-10 w-11 h-11 bg-black/10 rounded-[10px] flex items-center justify-center">
-            <ShieldCheck className="w-6 h-6 text-black" />
-          </div>
-          <div className="relative z-10 mt-6">
-            <h3 className="text-[22px] font-bold text-[#0d0e12] leading-tight tracking-tight">
-              Conduct & Ethics
-            </h3>
-            <p className="text-[13.5px] font-medium text-[#505258] mt-2 leading-snug">
-              Code of conduct, disciplinary actions, and campus behavioral norms.
-            </p>
-          </div>
-        </Card>
-
+          return (
+            <Card
+              key={category._id ? String(category._id) : index}
+              onClick={() => setActiveCategoryFilter(category.name)}
+              className={`p-6 min-h-62.5 flex flex-col justify-between relative overflow-hidden cursor-pointer transition-all duration-200 shadow-xs hover:shadow-md ${theme.border} ${theme.bg} ${
+                isActive ? `${theme.ring} scale-[1.02]` : "hover:scale-[1.01]"
+              }`}
+            >
+              {theme.circleBg && (
+                <div
+                  className={`absolute ${theme.circlePos} w-32 h-32 ${theme.circleBg} rounded-full opacity-80 pointer-events-none`}
+                />
+              )}
+              <div className={`relative z-10 w-11 h-11 ${theme.iconBg} rounded-[10px] flex items-center justify-center`}>
+                <IconComponent className={`w-6 h-6 ${theme.iconColor}`} />
+              </div>
+              <div className="relative z-10 mt-6">
+                <h3 className={`text-[22px] font-bold ${theme.titleColor} leading-tight tracking-tight`}>
+                  {category.name}
+                </h3>
+                <p className={`text-[13.5px] font-medium ${theme.textColor} mt-2 leading-snug`}>
+                  {category.description}
+                </p>
+              </div>
+            </Card>
+          );
+        })}
       </div>
     </section>
   );
 };
+

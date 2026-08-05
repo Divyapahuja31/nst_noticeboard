@@ -1,13 +1,13 @@
 "use client";
 
 import { deletePolicy } from "@/app/actions/DeletePolicy";
-import { Policy } from "@/types/policy";
+import { IPolicy } from "@/types/policy";
 import { format } from "date-fns";
 
 interface PolicyTableProps {
   isAdmin?: boolean;
-  policies?: Policy[];
-  onEdit?: (policy: Policy) => void;
+  policies?: IPolicy[];
+  onEdit?: (policy: IPolicy) => void;
 }
 
 export default function PolicyTable({
@@ -20,7 +20,7 @@ export default function PolicyTable({
       <table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Title</th>
             <th>Category</th>
             <th>Description</th>
             <th>Release Date</th>
@@ -29,41 +29,51 @@ export default function PolicyTable({
           </tr>
         </thead>
         <tbody>
-          {policies.map((policy) => (
-            <tr key={policy._id?.toString() || policy.name}>
-              <td>{policy.name}</td>
-              <td>{policy.category?.name || "N/A"}</td>
-              <td>{policy.description}</td>
-              <td>
-                {policy.date
-                  ? format(new Date(policy.date), "dd/MM/yyyy")
-                  : "-"}
-              </td>
-              <td>
-                {policy.file_link ? (
-                  <iframe
-                    src={policy.file_link + "/preview"}
-                    width="640"
-                    height="480"
-                    allow="autoplay"
-                  ></iframe>
-                ) : (
-                  "-"
-                )}
-              </td>
+          {policies.map((policy) => {
+            const title = policy.title || (policy as any).name || "Untitled";
+            const fileLink = policy.pdfUrl || (policy as any).file_link;
+            const policyDate = policy.updatedAt || policy.createdAt || (policy as any).date;
 
-              {isAdmin && (
+            return (
+              <tr key={policy._id?.toString() || title}>
+                <td>{title}</td>
                 <td>
-                  {onEdit && (
-                    <button onClick={() => onEdit?.(policy)}>Edit</button>
-                  )}
-                  <button onClick={() => deletePolicy(policy._id)}>
-                    Delete
-                  </button>
+                  {typeof policy.category === "object" && policy.category !== null
+                    ? policy.category.name
+                    : String(policy.category || "N/A")}
                 </td>
-              )}
-            </tr>
-          ))}
+                <td>{policy.description}</td>
+                <td>
+                  {policyDate ? format(new Date(policyDate), "dd/MM/yyyy") : "-"}
+                </td>
+                <td>
+                  {fileLink ? (
+                    <a
+                      href={fileLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline text-sm"
+                    >
+                      View Document
+                    </a>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+
+                {isAdmin && (
+                  <td>
+                    {onEdit && (
+                      <button onClick={() => onEdit?.(policy)}>Edit</button>
+                    )}
+                    <button onClick={() => deletePolicy(policy._id)}>
+                      Delete
+                    </button>
+                  </td>
+                )}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

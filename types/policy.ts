@@ -1,17 +1,13 @@
-import { ObjectId } from "mongodb";
+import { ICategory } from "./category";
+import { Types } from "mongoose";
 
-export interface Policy {
-  _id?: ObjectId | string;
-  id: string;
+export interface IPolicy {
+  _id: Types.ObjectId | string;
   title: string;
-  name?: string;
-  pdfUrl?: string;
-  file_link?: string;
-  category: any;
-  audience: "All" | "Undergraduate" | "Postgraduate" | "Hostel / Campus" | string;
-  updatedDate: string;
   description: string;
-  fullContent: string;
-  documentRef: string;
-  [key: string]: any;
+  pdfUrl?: string;
+  fullContent?: string;
+  category: ICategory;
+  updatedAt: Date | string;
+  createdAt: Date | string;
 }
