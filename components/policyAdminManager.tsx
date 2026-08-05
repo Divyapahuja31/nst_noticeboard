@@ -30,10 +30,10 @@ export default function PolicyAdminManager({
     setEditingPolicy(null);
   };
 
-  const getCategoryId = (category: Policy["category"]): string => {
+  const getCategoryId = (category: any): string => {
     if (!category) return "";
     if (typeof category === "string") return category;
-    if (category._id) return category._id.toString();
+    if (typeof category === "object" && category?._id) return category._id.toString();
     return "";
   };
 
