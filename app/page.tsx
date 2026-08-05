@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Policy } from "@/types/policy";
 import { POLICIES_DATA } from "@/lib/policiesData";
 import { Navbar } from "@/components/Navbar";
@@ -19,6 +19,12 @@ export default function Home() {
   const [activeAudienceFilter, setActiveAudienceFilter] = useState<string>("All");
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>("All");
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
+  const [visibleCount, setVisibleCount] = useState(5);
+
+  // Reset pagination count when filters change
+  useEffect(() => {
+    setVisibleCount(5);
+  }, [searchQuery, activeAudienceFilter, activeCategoryFilter]);
 
   // Filtered Policies
   const filteredPolicies = useMemo(() => {
@@ -45,6 +51,7 @@ export default function Home() {
     setSearchQuery("");
     setActiveAudienceFilter("All");
     setActiveCategoryFilter("All");
+    setVisibleCount(5);
   };
 
   const handleLoadSampleData = () => {
@@ -109,7 +116,7 @@ export default function Home() {
                     </button>
                   )}
                   <Badge variant="secondary" className="px-3.5 py-1.5 text-[13px] font-normal text-gray-700 bg-[#F4F2EC]">
-                    Showing <span className="font-bold text-black mx-1">{filteredPolicies.length}</span> of {policies.length} policies
+                    Showing <span className="font-bold text-black mx-1">{Math.min(visibleCount, filteredPolicies.length)}</span> of {filteredPolicies.length} policies
                   </Badge>
                 </div>
               </div>
@@ -122,7 +129,7 @@ export default function Home() {
                 />
               ) : filteredPolicies.length > 0 ? (
                 <div className="space-y-4">
-                  {filteredPolicies.map((policy) => (
+                  {filteredPolicies.slice(0, visibleCount).map((policy) => (
                     <PolicyCard
                       key={policy.id}
                       policy={policy}
@@ -137,9 +144,13 @@ export default function Home() {
                 />
               )}
 
-              {filteredPolicies.length > 0 && (
+              {filteredPolicies.length > visibleCount && (
                 <div className="mt-8 text-center">
-                  <Button variant="link" className="text-[14px] font-bold text-[#0d0e12] underline underline-offset-4">
+                  <Button
+                    variant="link"
+                    onClick={() => setVisibleCount((prev) => prev + 5)}
+                    className="text-[14px] font-bold text-[#0d0e12] underline underline-offset-4"
+                  >
                     Load More Policies
                   </Button>
                 </div>
