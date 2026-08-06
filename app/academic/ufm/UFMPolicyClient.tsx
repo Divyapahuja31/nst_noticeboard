@@ -24,33 +24,6 @@ interface UFMPolicyClientProps {
   defaultSelectedPolicy?: any;
 }
 
-const FALLBACK_POLICIES = [
-  {
-    _id: "ufm-2024",
-    id: "ufm-2024",
-    title: "Academic Integrity & UFM Policy 2024",
-    description: "This policy outlines the institution's commitment to academic honesty, defines Unfair Means (UFM), and establishes procedures for reporting, investigating, and penalizing instances of academic misconduct.",
-    file_link: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    audience: "All",
-    updatedDate: "Updated Aug 01, 2024",
-    date: "2024-08-01T00:00:00.000Z",
-    documentRef: "DOC-2024-UFM",
-    category: { name: "Academic" }
-  },
-  {
-    _id: "academic-integrity",
-    id: "academic-integrity",
-    title: "Academic Integrity & Grading Code",
-    description: "Standard protocols for plagiarism detection, citation guidelines, and letter grade appeals.",
-    file_link: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    audience: "All",
-    updatedDate: "Updated Jul 15, 2024",
-    date: "2024-07-15T00:00:00.000Z",
-    documentRef: "DOC-2024-ACG",
-    category: { name: "Academic" }
-  }
-];
-
 export default function UFMPolicyClient({
   initialPolicies,
   onBack,
@@ -58,10 +31,67 @@ export default function UFMPolicyClient({
 }: UFMPolicyClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   
-  // Use DB policies if they exist, otherwise use fallback policies
+  // Use database policies directly without any fallback mock data
   const policies = useMemo(() => {
-    return initialPolicies.length > 0 ? initialPolicies : FALLBACK_POLICIES;
+    return initialPolicies;
   }, [initialPolicies]);
+
+  // Selected policy state (default to defaultSelectedPolicy or first item)
+  const [selectedPolicy, setSelectedPolicy] = useState<any>(
+    defaultSelectedPolicy || (policies.length > 0 ? policies[0] : null)
+  );
+
+  // If database contains no policies, display a styled empty state page
+  if (policies.length === 0) {
+    return (
+      <div className="bg-[#FAF9F6] min-h-screen font-sans antialiased text-[#0d0e12] pb-24">
+        {/* Top Header Navigation */}
+        <header className="sticky top-0 z-40 bg-white border-b border-[#E6E2D8] px-4 sm:px-8 md:px-12 py-4">
+          <div className="max-w-310 mx-auto flex items-center justify-between">
+            {onBack ? (
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 text-[14px] font-bold text-[#0d0e12] hover:opacity-75 transition-opacity cursor-pointer border-0 bg-transparent"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Directory
+              </button>
+            ) : (
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-[14px] font-bold text-[#0d0e12] hover:opacity-75 transition-opacity"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Link>
+            )}
+          </div>
+        </header>
+
+        <div className="max-w-md mx-auto px-4 mt-28 text-center space-y-4">
+          <div className="w-16 h-16 bg-white border border-[#E6E2D8] rounded-[16px] flex items-center justify-center mx-auto shadow-2xs">
+            <FileText className="w-8 h-8 text-gray-400" />
+          </div>
+          <h2 className="text-[22px] font-extrabold text-[#0d0e12] tracking-tight">No Academic Policies Uploaded</h2>
+          <p className="text-[14px] text-gray-500 leading-relaxed">
+            There are currently no official Academic or UFM policies stored in the system database. Please contact the administrator or upload a policy from the admin control panel.
+          </p>
+          <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/" passHref legacyBehavior>
+              <Button variant="secondary" className="font-bold px-6 py-2.5 cursor-pointer">
+                Return Home
+              </Button>
+            </Link>
+            <Link href="/admin/policy" passHref legacyBehavior>
+              <Button className="bg-[#0056cc] hover:bg-[#0047b3] text-white font-bold px-6 py-2.5 border-0 cursor-pointer">
+                Go to Admin Panel
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Filtered policies based on search query
   const filteredPolicies = useMemo(() => {
@@ -72,14 +102,11 @@ export default function UFMPolicyClient({
     });
   }, [policies, searchQuery]);
 
-  // Selected policy state (default to defaultSelectedPolicy or first item)
-  const [selectedPolicy, setSelectedPolicy] = useState<any>(
-    defaultSelectedPolicy || filteredPolicies[0] || policies[0] || null
-  );
-
-  // Helper to format Google Drive link or use Google Docs Viewer to bypass X-Frame-Options blocks
+  // Helper to format Google Drive or Google Docs link for iframe preview
   const getPreviewUrl = (url: string) => {
     if (!url) return "";
+    
+    // Google Drive file link formatting
     if (url.includes("drive.google.com")) {
       if (url.includes("/file/d/")) {
         const matches = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
@@ -92,8 +119,20 @@ export default function UFMPolicyClient({
       }
       return url;
     }
-    // Use Google Docs Viewer for other PDF/document links to bypass SAMEORIGIN iframe blocking
-    return `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+
+    // Google Docs/Sheets/Slides link formatting to extract preview mode
+    if (url.includes("docs.google.com")) {
+      if (url.includes("/d/")) {
+        const matches = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (matches && matches[1]) {
+          const typeMatch = url.match(/(document|spreadsheets|presentation)/);
+          const docType = typeMatch ? typeMatch[1] : "document";
+          return `https://docs.google.com/${docType}/d/${matches[1]}/preview`;
+        }
+      }
+    }
+    
+    return url;
   };
 
   const handleDownload = (policy: any) => {
@@ -242,7 +281,7 @@ export default function UFMPolicyClient({
                       Active
                     </span>
                     <Badge variant="outline" className="font-mono text-[12.5px] border-gray-300 bg-gray-50 text-gray-700 font-semibold px-3 py-1">
-                      Ref: {selectedPolicy.documentRef}
+                      Ref: {selectedPolicy.documentRef || (selectedPolicy._id ? `DOC-${selectedPolicy._id.toString().substring(18).toUpperCase()}` : "ACAD-2024-UFM")}
                     </Badge>
                   </div>
                 </div>
@@ -260,7 +299,9 @@ export default function UFMPolicyClient({
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-gray-400" />
-                    <span>{selectedPolicy.updatedDate}</span>
+                    <span>
+                      {selectedPolicy.updatedDate || (selectedPolicy.updatedAt ? `Updated ${new Date(selectedPolicy.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : "Updated recently")}
+                    </span>
                   </div>
                 </div>
 
@@ -282,9 +323,9 @@ export default function UFMPolicyClient({
                     Download PDF Document
                   </Button>
 
-                  {selectedPolicy.file_link && (
+                  {(selectedPolicy.pdfUrl || selectedPolicy.file_link) && (
                     <a
-                      href={selectedPolicy.file_link}
+                      href={selectedPolicy.pdfUrl || selectedPolicy.file_link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 border border-[#E6E2D8] hover:bg-gray-50 text-gray-700 font-semibold px-6 py-2.5 rounded-[8px] text-[13.5px] transition-colors"
@@ -296,7 +337,7 @@ export default function UFMPolicyClient({
                 </div>
 
                 {/* PDF Live Preview Section */}
-                {selectedPolicy.file_link ? (
+                {(selectedPolicy.pdfUrl || selectedPolicy.file_link) ? (
                   <div className="pt-4">
                     <div className="flex items-center gap-2 mb-3">
                       <FileText className="w-4.5 h-4.5 text-gray-500" />
@@ -304,7 +345,7 @@ export default function UFMPolicyClient({
                     </div>
                     <div className="border border-[#E6E2D8] rounded-[12px] overflow-hidden bg-gray-100 h-[600px] shadow-2xs relative">
                       <iframe
-                        src={getPreviewUrl(selectedPolicy.file_link)}
+                        src={getPreviewUrl(selectedPolicy.pdfUrl || selectedPolicy.file_link)}
                         className="w-full h-full border-0 absolute inset-0"
                         allow="autoplay"
                         title="Document Preview"

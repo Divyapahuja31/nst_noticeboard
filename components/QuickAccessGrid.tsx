@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { GraduationCap, Calendar, FileText, ShieldCheck, icons } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -66,6 +67,7 @@ export const QuickAccessGrid: React.FC<QuickAccessGridProps> = ({
   setActiveCategoryFilter,
   categories = [],
 }) => {
+  const router = useRouter();
   console.log("cad", categories)
   return (
     <section id="quick-access" className="mt-14 mb-16">
@@ -94,11 +96,16 @@ export const QuickAccessGrid: React.FC<QuickAccessGridProps> = ({
             DEFAULT_ICONS[index % DEFAULT_ICONS.length];
 
           const isActive = activeCategoryFilter === category.name;
+          const isAcademic = category.name?.toLowerCase().includes("academic");
 
           return (
             <Card
               key={category._id ? String(category._id) : index}
-              onClick={() => setActiveCategoryFilter(category.name)}
+              onClick={
+                isAcademic
+                  ? () => router.push("/academic/ufm")
+                  : () => setActiveCategoryFilter(category.name)
+              }
               className={`p-6 min-h-62.5 flex flex-col justify-between relative overflow-hidden cursor-pointer transition-all duration-200 shadow-xs hover:shadow-md ${theme.border} ${theme.bg} ${
                 isActive ? `${theme.ring} scale-[1.02]` : "hover:scale-[1.01]"
               }`}
