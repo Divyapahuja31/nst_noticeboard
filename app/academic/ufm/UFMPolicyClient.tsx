@@ -281,7 +281,7 @@ export default function UFMPolicyClient({
                       Active
                     </span>
                     <Badge variant="outline" className="font-mono text-[12.5px] border-gray-300 bg-gray-50 text-gray-700 font-semibold px-3 py-1">
-                      Ref: {selectedPolicy.documentRef}
+                      Ref: {selectedPolicy.documentRef || (selectedPolicy._id ? `DOC-${selectedPolicy._id.toString().substring(18).toUpperCase()}` : "ACAD-2024-UFM")}
                     </Badge>
                   </div>
                 </div>
@@ -299,7 +299,9 @@ export default function UFMPolicyClient({
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-gray-400" />
-                    <span>{selectedPolicy.updatedDate}</span>
+                    <span>
+                      {selectedPolicy.updatedDate || (selectedPolicy.updatedAt ? `Updated ${new Date(selectedPolicy.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : "Updated recently")}
+                    </span>
                   </div>
                 </div>
 
@@ -321,9 +323,9 @@ export default function UFMPolicyClient({
                     Download PDF Document
                   </Button>
 
-                  {selectedPolicy.file_link && (
+                  {(selectedPolicy.pdfUrl || selectedPolicy.file_link) && (
                     <a
-                      href={selectedPolicy.file_link}
+                      href={selectedPolicy.pdfUrl || selectedPolicy.file_link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 border border-[#E6E2D8] hover:bg-gray-50 text-gray-700 font-semibold px-6 py-2.5 rounded-[8px] text-[13.5px] transition-colors"
@@ -335,7 +337,7 @@ export default function UFMPolicyClient({
                 </div>
 
                 {/* PDF Live Preview Section */}
-                {selectedPolicy.file_link ? (
+                {(selectedPolicy.pdfUrl || selectedPolicy.file_link) ? (
                   <div className="pt-4">
                     <div className="flex items-center gap-2 mb-3">
                       <FileText className="w-4.5 h-4.5 text-gray-500" />
@@ -343,7 +345,7 @@ export default function UFMPolicyClient({
                     </div>
                     <div className="border border-[#E6E2D8] rounded-[12px] overflow-hidden bg-gray-100 h-[600px] shadow-2xs relative">
                       <iframe
-                        src={getPreviewUrl(selectedPolicy.file_link)}
+                        src={getPreviewUrl(selectedPolicy.pdfUrl || selectedPolicy.file_link)}
                         className="w-full h-full border-0 absolute inset-0"
                         allow="autoplay"
                         title="Document Preview"
