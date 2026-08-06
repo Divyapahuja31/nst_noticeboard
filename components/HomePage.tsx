@@ -17,6 +17,8 @@ function Home({categories = [], policies = []} : { categories: ICategory[], poli
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("");
   const [selectedPolicy, setSelectedPolicy] = useState<IPolicy | null>(null);
 
+  console.log("policies: ", policies)
+
   if (selectedPolicy) {
     return (
       <UFMPolicyClient

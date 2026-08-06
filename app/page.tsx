@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 async function HomeSever() {
 
   const session = await auth();
-  if(!session || session.user.role !== "admin"){
+  if(!session){
     redirect('/signin')
   }
 

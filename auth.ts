@@ -48,7 +48,7 @@ const providers: Provider[] = [
         if (!isValid) return null;
 
         return {
-          id: user._id?.toString(),
+          id: user._id ? user._id.toString() : "",
           name: user.name,
           email: user.email,
           role: user.role,
@@ -74,6 +74,7 @@ export const providerMap = providers
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(client),
+  session: { strategy: "jwt" },
   providers,
   secret: process.env.AUTH_SECRET || process.env.BETTER_AUTH_SECRET,
   callbacks: {
@@ -103,7 +104,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   pages: {
-    signIn: "/login",
-    error: "/login?error=AccessDenied",
+    signIn: "/signin",
+    error: "/signin?error=AccessDenied",
   },
 });

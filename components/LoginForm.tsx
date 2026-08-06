@@ -1,25 +1,73 @@
 "use client";
 
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 
 interface LoginFormProps {
-  onCredentialsSubmit: (formData: FormData) => Promise<void>;
-  onGoogleSubmit: () => Promise<void>;
+  callbackUrl: string | undefined;
   errorMessage?: string;
 }
 
 export default function LoginForm({
-  onCredentialsSubmit,
-  onGoogleSubmit,
-  errorMessage,
+  errorMessage: initialErrorMessage,
+  callbackUrl,
 }: LoginFormProps) {
-  const [email, setEmail] = useState("");
+  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    initialErrorMessage
+  );
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoadingCredentials(true);
+    setErrorMessage(undefined);
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: callbackUrl || "/",
+      });
+
+      if (res?.error) {
+        if (
+          res.error === "CredentialsSignin" ||
+          res.error === "CallbackRouteError"
+        ) {
+          setErrorMessage("Invalid email or password.");
+        } else {
+          setErrorMessage("An error occurred during authentication.");
+        }
+      } else if (res?.ok || res?.url) {
+        window.location.href = res?.url || callbackUrl || "/";
+      }
+    } catch {
+      setErrorMessage("An error occurred during authentication.");
+    } finally {
+      setIsLoadingCredentials(false);
+    }
+  };
+
+  const handleGoogleSubmit = async () => {
+    setIsLoadingGoogle(true);
+    setErrorMessage(undefined);
+    try {
+      await signIn("google", {
+        callbackUrl: callbackUrl || "/",
+      });
+    } catch {
+      setErrorMessage("An error occurred during authentication.");
+      setIsLoadingGoogle(false);
+    }
+  };
+
   return (
-    <div className="w-full max-w-[400px] mx-auto">
+    <div className="w-full max-w-100 mx-auto">
       {/* Brand Logo */}
       <div className="flex justify-center mb-6">
         <svg width="48" height="48" viewBox="0 0 121 121">
@@ -78,17 +126,7 @@ export default function LoginForm({
       )}
 
       {/* Primary Form */}
-      <form
-        action={async (formData) => {
-          setIsLoadingCredentials(true);
-          try {
-            await onCredentialsSubmit(formData);
-          } finally {
-            setIsLoadingCredentials(false);
-          }
-        }}
-        className="space-y-4"
-      >
+      <form onSubmit={handleCredentialsSubmit} className="space-y-4">
         {/* Email Input */}
         <div>
           <label
@@ -160,7 +198,7 @@ export default function LoginForm({
             onClick={async () => {
               setIsLoadingGoogle(true);
               try {
-                await onGoogleSubmit();
+                await handleGoogleSubmit();
               } finally {
                 setIsLoadingGoogle(false);
               }
