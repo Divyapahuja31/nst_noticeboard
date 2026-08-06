@@ -1,12 +1,14 @@
 import { auth } from "@/auth"
 import { getDb } from "@/lib/db";
 import HomePage from "@/components/HomePage";
+import { redirect } from 'next/navigation';
 
 async function HomeSever() {
 
   const session = await auth();
-  if(!session || session.user.role !== "admin")
-    throw new Error("Unauthorized access")
+  if(!session || session.user.role !== "admin"){
+    redirect('/signin')
+  }
 
   const db = await getDb();
 
@@ -14,10 +16,10 @@ async function HomeSever() {
   const categories = JSON.parse(JSON.stringify(categoriesRaw));
 
   const policiesRaw = await db.collection('policy').find({}).toArray();
-  const rawPolicies = JSON.parse(JSON.stringify(policiesRaw));
+  const policies = JSON.parse(JSON.stringify(policiesRaw));
 
   return (
-    <HomePage categories={categories} rawPolicies={rawPolicies}/>
+    <HomePage categories={categories} policies={policies}/>
   )
 }
 
