@@ -15,8 +15,18 @@ export async function updatePolicy(formData: FormData): Promise<void> {
   const title = formData.get("title")?.toString() || formData.get("name")?.toString();
   const description = formData.get("description")?.toString();
   const categoryId = formData.get("categoryId")?.toString();
-  const pdfUrl = formData.get("pdfUrl")?.toString() || formData.get("file_link")?.toString();
   const fullContent = formData.get("fullContent")?.toString();
+  
+  const pdfFile = formData.get("pdfFile") as File | null;
+  let pdfUrl = formData.get("pdfUrl")?.toString() || formData.get("file_link")?.toString();
+
+  if (pdfFile && pdfFile.size > 0) {
+    if (pdfFile.size > 10 * 1024 * 1024) {
+      throw new Error("File size exceeds the 10MB limit.");
+    }
+    const { uploadToS3 } = await import("@/lib/s3");
+    pdfUrl = await uploadToS3(pdfFile);
+  }
 
   if (!id) {
     throw new Error("Policy ID is required");

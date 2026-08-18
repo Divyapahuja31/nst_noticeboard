@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -123,7 +123,7 @@ export default function PolicyClient({
   const handleDownload = () => {
     const pdfUrl = targetPolicy.pdfUrl || (targetPolicy as any).file_link;
     if (pdfUrl) {
-      window.open(pdfUrl, "_blank");
+      window.location.href = `/api/download?url=${encodeURIComponent(pdfUrl)}`;
     } else {
       alert("No download file link available for this policy.");
     }
