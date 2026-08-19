@@ -10,7 +10,6 @@ import {
   Mail,
   FileText,
   ChevronRight,
-  ExternalLink,
   Info,
   Share2,
   Check,
@@ -299,18 +298,6 @@ export default function PolicyClient({
                   <Download className="w-4.5 h-4.5" />
                   Download Official PDF
                 </Button>
-
-                {pdfLink && (
-                  <a
-                    href={pdfLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 border border-[#E6E2D8] hover:bg-gray-50 text-gray-700 font-semibold px-6 py-2.5 rounded-[8px] text-[13.5px] transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Open Source Link
-                  </a>
-                )}
               </div>
             </div>
 
