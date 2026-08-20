@@ -6,10 +6,11 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import type { Provider } from "next-auth/providers";
 import bcrypt from "bcryptjs";
-import { UserDocument, User } from "./types/user";
+import { UserDocument, User, UserRole } from "./types/user";
 
 const providers: Provider[] = [
   Google({
+    allowDangerousEmailAccountLinking: true,
     profile(profile) {
       return {
         id: profile.sub,
@@ -76,34 +77,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(client),
   providers,
   secret: process.env.AUTH_SECRET || process.env.BETTER_AUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async signIn({ account, profile }) {
-      if (account?.provider === "google") {
-        if (!profile?.email) return false;
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "credentials") return true;
 
-        const db = await getDb();
-        const existingUser = await db
-          .collection<UserDocument>("users")
-          .findOne({
-            email: profile.email.toLowerCase(),
-          });
-
-        if (!existingUser) {
-          return false;
-        }
+      if (account?.provider === "google" && profile?.email_verified !== true) {
+        return false;
       }
-      return true;
+
+      const email = (profile?.email ?? user.email)?.toLowerCase();
+      if (!email) return false;
+
+      const db = await getDb();
+      const existingUser = await db
+        .collection<UserDocument>("users")
+        .findOne({ email });
+
+      return Boolean(existingUser);
     },
 
-    async session({ session, user }) {
-      if (session.user && user) {
-        session.user.role = (user as User).role || "user";
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as User).role || "user";
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.role = (token.role as UserRole) || "user";
+        const id = (token.id as string | undefined) ?? token.sub;
+        if (id) {
+          session.user.id = id;
+        }
       }
       return session;
     },
   },
   pages: {
     signIn: "/signin",
-    error: "/signin?error=AccessDenied",
+    error: "/signin",
   },
 });
+

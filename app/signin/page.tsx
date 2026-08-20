@@ -1,21 +1,28 @@
 import LoginForm from "@/components/LoginForm";
 
+const NOT_PROVISIONED =
+  "Access denied. Account not registered or authorized.";
+
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  CredentialsSignin: "Invalid email or password.",
+  AccessDenied: NOT_PROVISIONED,
+  OAuthAccountNotLinked: NOT_PROVISIONED,
+  OAuthSignin: "Could not start sign-in with that provider. Please try again.",
+  OAuthCallbackError:
+    "Could not complete sign-in with that provider. Please try again.",
+  Verification: "That sign-in link is invalid or has expired.",
+  Configuration:
+    "Sign-in is temporarily unavailable. Please contact an administrator.",
+};
 
 export default async function SignInPage({searchParams}: {
   searchParams: Promise<{ callbackUrl?: string; error?: string }>;
 }) {
   const { callbackUrl, error } = await searchParams;
 
-  let errorMessage: string | undefined;
-  if (error) {
-    if (error === "CredentialsSignin") {
-      errorMessage = "Invalid email or password.";
-    } else if (error === "AccessDenied") {
-      errorMessage = "Access denied. Account not registered or authorized.";
-    } else {
-      errorMessage = "An error occurred during authentication.";
-    }
-  }
+  const errorMessage = error
+    ? AUTH_ERROR_MESSAGES[error] ?? "An error occurred during authentication."
+    : undefined;
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-white dark:bg-zinc-950">
