@@ -54,6 +54,11 @@ export default function PolicyAdminManager({
 
         <form
           action={async (formData: FormData) => {
+            const pdfFile = formData.get("pdfFile") as File | null;
+            if (pdfFile && pdfFile.size > 10 * 1024 * 1024) {
+              alert("File size exceeds the 10MB limit.");
+              return;
+            }
             if (editingPolicy) {
               await updatePolicy(formData);
               setEditingPolicy(null);
@@ -86,15 +91,33 @@ export default function PolicyAdminManager({
             />
           </div>
 
+          {/* PDF File Upload */}
+          <div>
+            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
+              Upload Policy PDF File
+            </label>
+            <input
+              type="file"
+              name="pdfFile"
+              accept=".pdf"
+              className="w-full bg-white border border-gray-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-[8px] px-3.5 py-2 text-[14px] text-black outline-none transition-all file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[13px] file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 py-1">
+            <div className="flex-grow border-t border-gray-200" />
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Or</span>
+            <div className="flex-grow border-t border-gray-200" />
+          </div>
+
           {/* PDF URL Field */}
           <div>
             <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
-              Policy PDF URL (Google Drive / S3 / Web Link)
+              Policy PDF URL (Google Drive / Web Link)
             </label>
             <input
               name="pdfUrl"
               placeholder="e.g. https://drive.google.com/file/d/.../preview"
-              required
               defaultValue={editingPolicy?.pdfUrl || ""}
               className="w-full bg-white border border-gray-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-[8px] px-3.5 py-2.5 text-[14px] text-black outline-none transition-all placeholder:text-gray-400"
             />
