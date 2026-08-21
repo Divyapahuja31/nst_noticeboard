@@ -10,6 +10,8 @@ import { UserDocument, User, UserRole } from "./types/user";
 
 const providers: Provider[] = [
   Google({
+    clientId: process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET,
     allowDangerousEmailAccountLinking: true,
     profile(profile) {
       return {
@@ -74,6 +76,7 @@ export const providerMap = providers
   .filter((provider) => provider.id !== "credentials");
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   adapter: MongoDBAdapter(client),
   providers,
   secret: process.env.AUTH_SECRET || process.env.BETTER_AUTH_SECRET,

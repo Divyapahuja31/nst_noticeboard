@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { GraduationCap, LogOut, ShieldAlert } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export const Navbar: React.FC = () => {
   return (
@@ -20,23 +19,20 @@ export const Navbar: React.FC = () => {
 
       {/* Right side actions */}
       <div className="flex items-center gap-3">
-        <Link href="/admin/policy" passHref legacyBehavior>
-          <Button
-            variant="outline"
-            className="text-[13px] font-bold border-gray-300 bg-white hover:bg-gray-100 hover:text-black cursor-pointer px-4 h-9 shadow-2xs text-[#0f1115] flex items-center gap-1.5"
-          >
-            <ShieldAlert className="w-4 h-4 text-gray-500" />
-            Admin Panel
-          </Button>
+        <Link
+          href="/admin/policy"
+          className="text-[13px] font-bold border border-gray-300 bg-white hover:bg-gray-100 hover:text-black cursor-pointer px-4 h-9 shadow-2xs text-[#0f1115] inline-flex items-center justify-center gap-1.5 rounded-[10px]"
+        >
+          <ShieldAlert className="w-4 h-4 text-gray-500" />
+          Admin Panel
         </Link>
 
-        <Link href="/signout" passHref legacyBehavior>
-          <Button
-            className="text-[13px] font-bold bg-[#121316] hover:bg-black text-white cursor-pointer px-4 h-9 shadow-2xs border-0 flex items-center gap-1.5"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </Button>
+        <Link
+          href="/signout"
+          className="text-[13px] font-bold bg-[#121316] hover:bg-black text-white cursor-pointer px-4 h-9 shadow-2xs border-0 inline-flex items-center justify-center gap-1.5 rounded-[10px]"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
         </Link>
       </div>
     </header>
