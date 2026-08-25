@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import {
   Home,
   Calendar,
@@ -37,6 +39,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = [
     { id: "home", label: "Home", icon: Home },
@@ -163,20 +171,52 @@ export const Navbar: React.FC<NavbarProps> = ({
                     Admin Panel
                   </Link>
                 )}
-                <Link
-                  href="/signout"
-                  onClick={() => setShowProfileMenu(false)}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    setShowSignOutModal(true);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-4 h-4 text-red-500" />
                   Sign Out
-                </Link>
+                </button>
               </div>
             )}
           </div>
         </div>
 
       </header>
+
+      {/* Sign Out Confirmation Modal Portal */}
+      {mounted && showSignOutModal && createPortal(
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-[#F5F0E6] rounded-[24px] p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-[#E6E2D8] text-center space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="w-12 h-12 rounded-full bg-[#E6E2D8]/80 text-[#0d0e12] flex items-center justify-center mx-auto shadow-2xs">
+              <LogOut className="w-5 h-5 text-slate-800" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-[#0d0e12]">Sign Out Confirmation</h3>
+              <p className="text-xs font-medium text-[#555] mt-1">Are you sure you want to sign out of your account?</p>
+            </div>
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={() => setShowSignOutModal(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-[#E6E2D8] bg-white hover:bg-gray-100 text-xs font-bold text-[#0d0e12] transition cursor-pointer shadow-2xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => signOut({ callbackUrl: "/signin" })}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+              >
+                Yes, Sign Out
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
