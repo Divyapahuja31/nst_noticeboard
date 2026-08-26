@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { IPolicy } from "@/types/policy";
 import { EmptyState } from "./EmptyState";
-import { Calendar, Clock } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 
 interface UserProfile {
   name?: string | null;
