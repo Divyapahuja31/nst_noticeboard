@@ -135,18 +135,6 @@ export default function LoginForm({
           >
             Email Address
           </label>
-<<<<<<< Updated upstream
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            className="w-full px-3.5 py-2.5 text-sm rounded-[5px] border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#0673f9]/30 focus:border-[#0673f9] transition"
-          />
-=======
           <div className="relative">
             <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -161,7 +149,6 @@ export default function LoginForm({
               className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm rounded-2xl border border-[#E6E2D8] bg-[#FAF9F6] text-[#0d0e12] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition font-medium"
             />
           </div>
->>>>>>> Stashed changes
         </div>
 
         {/* Password Field */}
@@ -172,18 +159,6 @@ export default function LoginForm({
           >
             Password
           </label>
-<<<<<<< Updated upstream
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            className="w-full px-3.5 py-2.5 text-sm rounded-[5px] border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#0673f9]/30 focus:border-[#0673f9] transition"
-          />
-=======
           <div className="relative">
             <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -198,7 +173,6 @@ export default function LoginForm({
               className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm rounded-2xl border border-[#E6E2D8] bg-[#FAF9F6] text-[#0d0e12] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition font-medium"
             />
           </div>
->>>>>>> Stashed changes
         </div>
 
         {/* Submit Button */}
