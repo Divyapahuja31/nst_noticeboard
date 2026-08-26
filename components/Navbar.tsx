@@ -155,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
                 {user?.role === "admin" && (
                   <Link
-                    href="/admin/policy"
+                    href="/admin"
                     onClick={() => setShowProfileMenu(false)}
                     className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors"
                   >
