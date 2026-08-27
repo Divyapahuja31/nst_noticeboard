@@ -18,10 +18,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const nunitoSans = Nunito_Sans({
+  variable: "--font-nunito-sans",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "Notice Board - Policies & Events",
   description: "Official campus notice board for policies and events",
 };
+
+import { Providers } from "@/components/Providers";
 
 export default function RootLayout({
   children,

@@ -90,7 +90,7 @@ function Home({
     <div className="bg-[#F5F0E6] min-h-screen p-3 sm:p-4 font-sans antialiased text-[#0d0e12] relative overflow-x-hidden selection:bg-blue-500 selection:text-white">
       
       {/* INNER FRAMED CANVAS CONTAINER */}
-      <div className="w-full max-w-[1480px] mx-auto bg-[#F5F0E6] rounded-[24px] sm:rounded-[28px] overflow-hidden relative min-h-[calc(100vh-2rem)] flex flex-col justify-between">
+      <div className="w-full max-w-[1480px] mx-auto bg-white rounded-[24px] sm:rounded-[28px] overflow-hidden relative min-h-[calc(100vh-2rem)] flex flex-col justify-between">
         
         {/* DYNAMIC ISLAND NAVBAR FLOATING AT TOP CENTER */}
         <Navbar
@@ -277,6 +277,9 @@ function Home({
           )}
 
         </div>
+
+        {/* Footer Landscape Banner */}
+        <Footer />
       </div>
 
       <PolicyDetailModal

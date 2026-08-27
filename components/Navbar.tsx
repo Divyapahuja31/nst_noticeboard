@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import {
   Home,
   Calendar,
@@ -49,11 +50,13 @@ export const Navbar: React.FC<NavbarProps> = ({
     setMounted(true);
   }, []);
 
+  const pathname = usePathname();
+
   const navItems = [
-    { id: "home", label: "Home", icon: Home },
-    { id: "events", label: "Events", icon: Calendar },
-    { id: "policies", label: "Policies", icon: FileText },
-    { id: "timetable", label: "Time Table", icon: Grid },
+    { id: "home", label: "Home", icon: Home, href: "/" },
+    { id: "events", label: "Events", icon: Calendar, href: "/events" },
+    { id: "policies", label: "Policies", icon: FileText, href: "/policies" },
+    { id: "timetable", label: "Time Table", icon: Grid, href: "/timetable" },
   ];
 
   const getUserInitials = (name?: string | null) => {
@@ -82,10 +85,15 @@ export const Navbar: React.FC<NavbarProps> = ({
         <nav className="flex items-center gap-2 sm:gap-4">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.id;
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : (pathname?.startsWith(item.href) || (item.href === "/policies" && pathname?.startsWith("/policy")));
+
             return (
-              <button
+              <Link
                 key={item.id}
+                href={item.href}
                 onClick={() => setActiveTab(item.id)}
                 className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-bold flex items-center gap-2 transition-all cursor-pointer ${
                   isActive
@@ -95,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Icon className={`w-4.5 h-4.5 sm:w-5 sm:h-5 ${isActive ? "text-white" : "text-slate-700"}`} />
                 <span>{item.label}</span>
-              </button>
+              </Link>
             );
           })}
         </nav>
@@ -113,7 +121,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Notifications"
             >
               <Bell className="w-5 h-5 text-slate-800" />
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-blue-600 rounded-full ring-2 ring-[#F5F0E6] animate-pulse" />
             </button>
 
             {/* Notification Popover */}
@@ -124,16 +131,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                     Notifications
                   </span>
-                  <span className="text-[11px] text-blue-600 font-semibold cursor-pointer hover:underline">
-                    Mark as read
-                  </span>
                 </div>
-                <div className="space-y-2">
-                  <div className="p-2.5 rounded-xl bg-blue-50/60 border border-blue-100 text-xs">
-                    <p className="font-bold text-slate-900">Noticeboard active</p>
-                    <p className="text-slate-500 mt-0.5">Stay updated with latest college policies and announcements.</p>
-                    <span className="text-[10px] text-slate-400 mt-1 block">Just now</span>
-                  </div>
+                <div className="py-6 text-center text-xs text-slate-400 space-y-1">
+                  <Bell className="w-6 h-6 text-slate-300 mx-auto mb-1" />
+                  <p className="font-semibold text-slate-600">No new notifications</p>
+                  <p className="text-[11px] text-slate-400">You&apos;re all caught up!</p>
                 </div>
               </div>
             )}
@@ -151,7 +153,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border-2 border-blue-200 shadow-2xs bg-blue-50 text-slate-900 overflow-hidden">
                 <AvatarImage src={avatarUrl} alt={user?.name || "User Profile Photo"} />
                 <AvatarFallback className="bg-blue-600 text-white font-bold text-xs">
-                  {getUserInitials(user?.name)}
+                  {getUserInitials(currentUser?.name || currentUser?.email)}
                 </AvatarFallback>
               </Avatar>
               <ChevronDown className="w-4 h-4 text-slate-700" />
@@ -171,7 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <p className="text-[11px] text-slate-500 truncate">{user?.email || "Student Account"}</p>
                   </div>
                 </div>
-                {user?.role === "admin" && (
+                {currentUser?.role === "admin" && (
                   <Link
                     href="/admin"
                     onClick={() => setShowProfileMenu(false)}

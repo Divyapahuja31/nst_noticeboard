@@ -54,7 +54,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="w-full lg:w-8/12 flex flex-col items-start text-left z-10">
         
         {/* DYNAMIC USER GREETING */}
-        <h1 className="text-5xl sm:text-6xl lg:text-[68px] font-black tracking-tight text-slate-950 leading-tight">
+        <h1 className="text-5xl sm:text-6xl lg:text-[68px] font-extrabold tracking-tight text-slate-950 leading-tight">
           Hey {displayName}!
         </h1>
 
