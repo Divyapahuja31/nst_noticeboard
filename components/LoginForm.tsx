@@ -140,6 +140,7 @@ export default function LoginForm({
             name="email"
             type="email"
             required
+            suppressHydrationWarning
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
@@ -160,6 +161,7 @@ export default function LoginForm({
             name="password"
             type="password"
             required
+            suppressHydrationWarning
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
